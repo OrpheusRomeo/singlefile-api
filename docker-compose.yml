@@ -1,0 +1,51 @@
+version: '3.8'
+
+# 定义服务
+services:
+  singlefile-api:
+    # 使用你已构建的镜像（确保镜像名和标签与构建时一致）
+    image: singlefile-api:latest
+    # 容器名称（便于管理）
+    container_name: singlefile-service
+    # 重启策略：容器退出时总是重启（除非手动停止）
+    restart: always
+    # 端口映射：宿主机 3000 端口 -> 容器 3000 端口
+    ports:
+      - "3009:3000"
+    # 挂载卷：宿主机目录 -> 容器内下载目录（持久化文件）
+    volumes:
+      - ./data/singlefile-downloads:/downloads  # 相对路径（当前目录下的singlefile-downloads）
+      # 如果你想使用绝对路径，替换为：
+      # - /宿主机/绝对路径/singlefile-downloads:/downloads
+    # 权限配置：解决容器内文件权限问题（可选，根据实际情况调整）
+    user: "${UID:-1000}:${GID:-1000}"
+    # 环境变量
+    environment:
+      - NODE_ENV=production  # 生产环境
+      - PORT=3000            # 服务端口（与容器内暴露的端口一致）
+      # 可选：自定义 Chromium 路径（如果需要）
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+    # 容器特权：解决 Chromium 沙箱权限问题
+    cap_add:
+      - SYS_ADMIN
+    # 资源限制：防止容器占用过多资源
+    deploy:
+      resources:
+        limits:
+          cpus: '1'          # 最多使用 1 个 CPU 核心
+          memory: 1G         # 最多使用 1GB 内存
+        reservations:
+          cpus: '0.5'        # 预留 0.5 个 CPU 核心
+          memory: 512M       # 预留 512MB 内存
+    # 健康检查：监控服务状态，异常时自动重启
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s          # 每 30 秒检查一次
+      timeout: 10s           # 检查超时时间 10 秒
+      retries: 3             # 失败 3 次判定为不健康
+      start_period: 60s      # 容器启动后 60 秒再开始检查
+
+# 定义卷（可选，与上面的 volumes 对应，确保数据持久化）
+volumes:
+  singlefile-downloads:
+    driver: local
