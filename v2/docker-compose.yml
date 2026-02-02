@@ -1,38 +1,33 @@
 version: '3.8'
 
-# 定义服务
 services:
   singlefile-api:
+    build: .
+    container_name: singlefile-api-node
     image: singlefile-api:v2
-    container_name: singlefile-service
-    restart: always
     ports:
-      - "3010:3000"
+      - "3000:3000"
     volumes:
-      - ./data/singlefile-downloads:/downloads  
-    user: "${UID:-1000}:${GID:-1000}"
+      # 将本地目录挂载到容器的 /downloads 目录
+      - ./data/downloads:/downloads  
     environment:
-      - NODE_ENV=production  # 生产环境
-      - PORT=3000            # 服务端口（与容器内暴露的端口一致）
-      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+      - NODE_ENV=production
+      - PORT=3000
+      - CHROMIUM_PATH=/usr/bin/chromium
+      # 禁用 Chromium 沙箱（容器环境必需）
+      - CHROMIUM_FLAGS=--no-sandbox,--disable-dev-shm-usage,--disable-gpu,--disable-setuid-sandbox
+    restart: unless-stopped
+    # 添加必要的权限
     cap_add:
       - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
+    # 设置资源限制
     deploy:
       resources:
         limits:
-          cpus: '1'          # 最多使用 1 个 CPU 核心
-          memory: 1G         # 最多使用 1GB 内存
+          cpus: '1'
+          memory: 2G
         reservations:
-          cpus: '0.5'        # 预留 0.5 个 CPU 核心
-          memory: 512M       # 预留 512MB 内存
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s          # 每 30 秒检查一次
-      timeout: 10s           # 检查超时时间 10 秒
-      retries: 3             # 失败 3 次判定为不健康
-      start_period: 60s      # 容器启动后 60 秒再开始检查
-
-# 定义卷（可选，与上面的 volumes 对应，确保数据持久化）
-volumes:
-  singlefile-downloads:
-    driver: local
+          cpus: '0.5'
+          memory: 1G
