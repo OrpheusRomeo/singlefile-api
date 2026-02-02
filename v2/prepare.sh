@@ -1,7 +1,8 @@
 #!/bin/sh
 # 1. 创建下载目录（确保权限正确）
-mkdir -p ./data/downloads
-chmod 777 ./data/downloads  # 简化权限配置，生产环境可按需调整
+mkdir -p  /data/singlefile-downloads
+chmod 777 /data/singlefile-downloads  # 简化权限配置，生产环境可按需调整
+
 
 # 2. 启动服务（后台运行）
 docker compose up -d
