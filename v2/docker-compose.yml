@@ -9,11 +9,13 @@ services:
       - "3010:3000"
     volumes:
       # 将本地目录挂载到容器的 /downloads 目录
-      - ./data/downloads:/downloads  
+      - /data/singlefile-downloads:/downloads  
+    user: "${UID:-1000}:${GID:-1000}"
     environment:
       - NODE_ENV=production
       - PORT=3000
       - CHROMIUM_PATH=/usr/bin/chromium
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
       # 禁用 Chromium 沙箱（容器环境必需）
       - CHROMIUM_FLAGS=--no-sandbox,--disable-dev-shm-usage,--disable-gpu,--disable-setuid-sandbox
     restart: unless-stopped
@@ -31,3 +33,9 @@ services:
         reservations:
           cpus: '0.5'
           memory: 1G
+
+# 定义卷（可选，与上面的 volumes 对应，确保数据持久化）
+#volumes:
+#  singlefile-downloads:
+#    driver: local
+

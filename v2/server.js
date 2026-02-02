@@ -116,7 +116,7 @@ app.post('/download', async (req, res) => {
       'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
       '--browser-window-size',
       '375,812', // iPhone 12 尺寸，模拟移动端
-      '--dump-content',
+      //'--dump-content',
       '--browser-inject-css',
       'body { background-color: white !important; }',
     ];
