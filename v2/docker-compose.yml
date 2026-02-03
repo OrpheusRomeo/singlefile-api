@@ -33,9 +33,11 @@ services:
         reservations:
           cpus: '0.5'
           memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s          # 每 30 秒检查一次
+      timeout: 10s           # 检查超时时间 10 秒
+      retries: 3             # 失败 3 次判定为不健康
+      start_period: 60s      # 容器启动后 60 秒再开始检查
 
-# 定义卷（可选，与上面的 volumes 对应，确保数据持久化）
-#volumes:
-#  singlefile-downloads:
-#    driver: local
 
