@@ -9,7 +9,7 @@ services:
       - "${PORT}:3000"
     volumes:
       # 将本地目录挂载到容器的 /downloads 目录
-      - /data/singlefile-downloads:/downloads  
+      - ./data/singlefile-downloads:/downloads  
     user: "${UID:-1000}:${GID:-1000}"
     environment:
       - NODE_ENV=production
