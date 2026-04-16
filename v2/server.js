@@ -118,6 +118,10 @@ app.post('/download', async (req, res) => {
       '375,812', // iPhone 12 尺寸，模拟移动端
       //'--dump-content',
       '--browser-inject-css',
+      // ========== 新增懒加载处理 ==========
+      '--browser-scroll', 'true',
+      '--browser-scroll-wait', '500',
+      '--browser-delay', '3000',
       'body { background-color: white !important; }',
     ];
 

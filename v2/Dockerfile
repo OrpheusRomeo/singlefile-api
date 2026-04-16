@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     fonts-wqy-zenhei \
     fonts-wqy-microhei \
     fonts-droid-fallback \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # 创建非root用户
